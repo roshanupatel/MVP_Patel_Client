@@ -1,8 +1,8 @@
 const controllers = require('./controllers/index.js');
 const router = require('express').Router();
 
-// router.get('/', controllers.getTrails);
-router.get('/login/:id', controllers.userControllers.loginUser);
-router.post('/signup/:id', controllers.userControllers.createUser);
+router.get('/getTrails', controllers.getTrails);
+router.get('/login/:id', controllers.loginUser);
+router.post('/signup/:id', controllers.signUpUser);
 
 module.exports = router;

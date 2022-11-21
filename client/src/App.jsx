@@ -1,7 +1,6 @@
 import './App.css';
 import React from "react";
 import axios from "axios";
-import MapContainer from "./components/MapContainer.jsx";
 import Login from './components/Login';
 import SignUp from './components/Signup';
 import Dashboard from './components/Dashboard';
@@ -18,7 +17,6 @@ const App = () => {
 
   const getUserData = async (user) => {
     let userData = await axios.get(`/api/login/${user.firebaseId}`, {params: user});
-    console.log(userData)
     setUserInfo(userData.data);
   };
 

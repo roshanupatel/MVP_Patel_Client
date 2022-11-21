@@ -1,21 +1,30 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`);
+mongoose.connect("mongodb://127.0.0.1:27017/dogtrails");
 
-const recipeSchema = new mongoose.Schema(
+const dogTrailsSchema = new mongoose.Schema(
   {
-    name: {type: String},
-    description: {type: String, default: null},
-    ingredients: {type: [String]},
-    steps: {type: [String]},
-    favorites: {type: Boolean, default: false},
-    views: {type: Number, default: 0},
-    image_id: {type: String, default: null}
+    //firebase_id: {type: String},
+    //description: {type: String, default: null},
+    title: {type: String},
+    trailName: {type: String},
+    location: {lat: Number, lng: Number},
+    length: {type: Number, default: 1},
+    traffic: {type: String, default: "Moderate"},
+    offLeash: {type: Boolean, default: false}
   },
+  {collection : 'dogTrails'},
   { timestamps: true } // will automatically create and set `createdAt` and `updatedAt` timestamps
 );
 
-const Recipe = new mongoose.model(`${process.env.DB_NAME}`, recipeSchema); //  TODO: Fill in arguments!
+const dogTrailsDB = new mongoose.model('dogtrail', dogTrailsSchema);
 
-module.exports = Recipe;
+let getAllTrails = async (cb) => {
+  const docs = await dogTrailsDB.find()
+    .exec((err, docs) => {
+      cb(err, docs);
+    });
+}
+
+module.exports.getAllTrails = getAllTrails;
