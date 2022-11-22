@@ -24,7 +24,6 @@ const Dashboard = ({ getUserData, clearUserInfo }) => {
   const getData = async () => {
     await Axios.get("/api/getTrails")
       .then((res) => {
-       console.log('this working??', res.data);
         setArray(res.data);
       })
       .catch((err) => {

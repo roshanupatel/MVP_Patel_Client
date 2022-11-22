@@ -65,6 +65,10 @@ const MapContainer = ({ array, isAdding, getLocation }) => {
 
   const [ selected, setSelected ] = useState({});
   const [ currentPosition, setCurrentPosition ] = useState({});
+  const [ addMarkerPosition, setAddMarkerPosition ] = useState({location: {
+    lat: 37.5, lng: -121.8
+  }});
+  const [ addSelected, setAddSelected ] = useState({});
 
   const markerRef = useRef(null);
 
@@ -76,20 +80,26 @@ const MapContainer = ({ array, isAdding, getLocation }) => {
     setSelected(item);
   }
 
-  const success = (position) => {
-    const latitude  = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    const currentPosition = {
-      lat: latitude,
-      lng: longitude
-    }
-    setCurrentPosition(currentPosition);
+  const onAddSelect = e => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    setAddSelected({ location: {lat: lat, lng: lng} })
   }
+
+  // const success = (position) => {
+  //   const latitude  = position.coords.latitude;
+  //   const longitude = position.coords.longitude;
+  //   const currentPosition = {
+  //     lat: latitude,
+  //     lng: longitude
+  //   }
+  //   setCurrentPosition(currentPosition);
+  // }
 
   const onMarkerDragEnd = (e) => {
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
-    setCurrentPosition({ lat, lng})
+    setAddMarkerPosition({location: { lat: lat, lng: lng}});
   };
 
   const footer = (
@@ -121,7 +131,6 @@ const MapContainer = ({ array, isAdding, getLocation }) => {
 
   //navigator.geolocation.getCurrentPosition(success);
 
-
   return (
   <>
     <LoadScript
@@ -129,12 +138,44 @@ const MapContainer = ({ array, isAdding, getLocation }) => {
       googleMapsApiKey={process.env.REACT_APP_GOOGLE_API_KEY}
     >
       <GoogleMap
-        id='example-map'
+        id='goog-map'
         mapContainerStyle={mapStyles()}
         draggable={true}
         zoom={13}
         center={currentPosition.lat ? currentPosition : defaultCenter}
       >
+        <Marker
+          draggable={true}
+          icon={{url: "data:image/png;base64,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"}}
+          onDragEnd={e => onMarkerDragEnd(e) }
+          onClick={(e) => onAddSelect(e)}
+          position={addMarkerPosition.location ? addMarkerPosition.location : {lat: 37.5, lng: -121.8}}
+				/>
+        {
+          addSelected.location ?
+          (
+            <InfoWindow
+            position={addSelected.location}
+            onCloseClick={() => setAddSelected({})}
+          >
+            <div className="infowindow">
+              <p>Lat: {addSelected.location.lat}</p>
+              <p>Lng: {addSelected.location.lng}</p>
+              <form>
+                <label >Park Name:</label>
+                <input type="text" id="parkName" name="parkName"></input>
+                <label >Trail Name:</label>
+                <input type="text" id="trailName" name="trailName"></input>
+                <label >Length:</label>
+                <input type="text" id="length" name="length"></input>
+                <label >Off Leash?</label>
+                <input type="text" id="offLeash" name="offLeash"></input>
+                <input type="submit" value="Add Trail!"></input>
+              </form>
+            </div>
+          </InfoWindow>
+          ) : null
+        }
         {
           array ?
           array.map((item, index) => {
@@ -146,15 +187,6 @@ const MapContainer = ({ array, isAdding, getLocation }) => {
             />
             )
           }) : null
-        }
-        {
-          isAdding ?
-          <Marker
-          position={currentPosition}
-          ref={() => markerRef}
-          onDragEnd={(e) => onMarkerDragEnd(e)}
-          draggable={true} /> :
-          null
         }
         {
           selected.location ?
